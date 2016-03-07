@@ -4,6 +4,7 @@
 #include <sys/wait.h>
 #include <readline/readline.h>
 #include <readline/history.h>
+
 int main(void) {
     char *line = NULL, *expn = NULL;
     int status;
@@ -24,4 +25,7 @@ int main(void) {
                 return 1;
             }
             waitpid(pid, &status, 0);
-        }}}
+        }
+    }
+    return 0;
+}

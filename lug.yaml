@@ -1,0 +1,8 @@
+Title: Readline Ninja Skills
+Description: >
+    A presentation on some of the more obsecure, yet awesome, features of
+    the Readline and GNU History libraries.
+Date: 2016-03-07
+Files:
+    SlidesPDF: rdln.pdf
+    LaTeX: rdln.tex

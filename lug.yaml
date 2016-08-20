@@ -4,6 +4,7 @@ Description: >
     the Readline and GNU History libraries. Also includes a how-to on
     programming in C/C++ with Readline.
 Date: 2016-03-07
+Thumbnail: thumbnail.png
 Files:
     SlidesPDF: rdln.pdf
     LaTeX: rdln.tex

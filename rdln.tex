@@ -1,23 +1,21 @@
-\documentclass{beamer}
+\documentclass[aspectratio=1610]{beamer}
+\usetheme{lug}
 \usepackage{xcolor}
 \usepackage{fontspec}
 \usepackage{minted}
 \setminted{autogobble}
 \usemintedstyle{lovelace}
-\usetheme{Luebeck}
 \beamertemplatenavigationsymbolsempty
 \setbeamercovered{dynamic}
 
 \title{Readline Ninja Skills}
 \author{Jack Rosenthal}
-\date{7 March 2016}
-\logo{\includegraphics[width=30mm]{graphics/lug.pdf}}
+\date{2016-03-07 \\ 2018-03-08}
 
 \begin{document}
 \begin{frame}
     \maketitle
 \end{frame}
-\logo{}
 
 \begin{frame}
     \frametitle{Readline}
@@ -30,6 +28,8 @@
         \item Some readline things make you feel like a total ninja.
     \end{itemize}
 \end{frame}
+
+\section{Using Readline \& History}
 
 \begin{frame}
     \frametitle{History}
@@ -57,7 +57,7 @@
         \item[] \texttt{!?$search$?} - refer to the last command with $search$
             anywhere in the command
     \end{itemize}
-    \pause
+    \pause[\thebeamerpauses]
     Examples:
     \begin{itemize}[<+->]
         \item \texttt{sudo !!} - run the last command with \texttt{sudo} in
@@ -82,7 +82,7 @@
         \item[] \texttt{:\%} - select the argument that matches
                 \texttt{?$search$?}
     \end{itemize}
-    \pause
+    \pause[\thebeamerpauses]
     Examples:
     \begin{itemize}[<+->]
         \item \texttt{cd !!:1} - \texttt{cd} to the first argument of the last
@@ -151,6 +151,8 @@
     need to \texttt{stty -ixon}).
 \end{frame}
 
+\section{Readline Programming in C/C++}
+
 \begin{frame}[fragile=singleslide]
     \frametitle{C/C++ Readline Library}
     \inputminted{c}{codesnip/readlineinclude.c}
@@ -204,22 +206,106 @@
     message.
 \end{frame}
 
-\begin{frame}[fragile]
-    \frametitle{A Complete Example}
+\begin{frame}[fragile]{A Complete Example: 31-line UNIX shell}
     \tiny
     \inputminted[linenos]{c}{codesnip/progexample.c}
 \end{frame}
 
-\begin{frame}
-    \frametitle{More Info}
-    \begin{enumerate}[<+->]
+\section{Readline Programming in Python}
+
+\begin{frame}[fragile]{\texttt{import readline}}
+
+    To use Readline from Python, type \texttt{import readline}, and the
+    \texttt{input} function will magically become readlineifyed.
+
+    \begin{minted}{python3}
+        import sys
+        import readline
+
+        while True:
+            try:
+                cmd = input(">>> ")
+            except KeyboardInterrupt:
+                continue
+            except EOFError:
+                sys.exit(0)
+            print(exec(cmd))
+    \end{minted}
+\end{frame}
+
+\begin{frame}[fragile]{Tab Completion}
+    The \texttt{readline} module provides an interface for you to add your own
+    completer:
+
+    \begin{minted}{python3}
+        readline.set_completer(function)
+    \end{minted}
+
+    \mintinline{python3}{function} should be a function which takes two
+    parameters:
+
+    \begin{tabular}{l l}
+        \texttt{text} & The current completion text \\
+        \texttt{state} & \texttt{0}, \texttt{1}, \ldots \\
+    \end{tabular}
+
+    \pause
+
+    Then, set your delimiters and completion keys:
+    \begin{minted}{python3}
+        readline.set_completer_delims(' ')
+        readline.parse_and_bind("tab: complete")
+    \end{minted}
+\end{frame}
+
+\begin{frame}[fragile]{Custom Completion in the Wild: \texttt{iels}}
+    \fontsize{9pt}{10pt}\selectfont
+    \begin{minted}[linenos]{python3}
+        def completer(text, state):
+            def gen():
+                variables = reduce(set.union, map(dict.keys, els.vars), set())
+                for s in '%', '$':
+                    for v in variables:
+                        if (s + v).startswith(text):
+                            yield s + v
+                for op in els.operators:
+                    if op.startswith(text):
+                        yield op
+                for syntax in 'begin', 'end':
+                    if syntax.startswith(text):
+                        yield syntax
+
+            if state == 0:
+                completer.it = gen()
+
+            try:
+                return next(completer.it)
+            except StopIteration:
+                return None
+    \end{minted}
+\end{frame}
+
+\section{Further Resources}
+
+\begin{frame}{More Info}
+    \begin{enumerate}
         \item \texttt{man 3 readline}
         \item \texttt{man 3 history}
-        \item RTFM
-        \item RTFM
-        \item RTFM
-        \item RTFM
-        \item RTFM
+        \item \texttt{pydoc readline}
+        \item RTFM: Read The \emph{Fine} Manual
     \end{enumerate}
 \end{frame}
+
+{
+    \setbeamercolor{background canvas}{bg=csmblue}
+\begin{frame}
+
+    \begin{center}
+        \Huge\headingfont
+        \color{white}{Questions?}
+    \end{center}
+
+\end{frame}
+}
+
 \end{document}
